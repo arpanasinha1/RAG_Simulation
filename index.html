@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RAG Simulator</title>
+<style>
+body{
+font-family: Arial, Helvetica, sans-serif;
+background: linear-gradient(135deg,#eef2ff,#f8fafc);
+margin:0;
+padding:40px;
+color:#1e293b;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+background:white;
+border-radius:12px;
+padding:30px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#64748b;
+margin-bottom:30px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-bottom:20px;
+}
+
+.card{
+border:1px solid #e2e8f0;
+border-radius:10px;
+padding:20px;
+background:#f8fafc;
+min-height:120px;
+}
+
+.card h3{
+margin-top:0;
+}
+
+.buttons{
+text-align:center;
+margin-top:25px;
+}
+
+button{
+padding:12px 18px;
+margin:8px;
+border:none;
+border-radius:8px;
+background:#4f46e5;
+color:white;
+font-size:14px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+background:#4338ca;
+}
+
+button.secondary{
+background:#64748b;
+}
+
+.result{
+margin-top:20px;
+padding:20px;
+border-radius:10px;
+background:#ecfeff;
+border:1px solid #a5f3fc;
+display:none;
+}
+
+.step{
+margin-top:15px;
+padding:15px;
+border-radius:8px;
+background:#f1f5f9;
+display:none;
+}
+
+.highlight{
+background:#dbeafe;
+padding:4px 6px;
+border-radius:4px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>RAG Simulator</h1>
+<div class="subtitle">Understand Retrieval → Augmentation → Generation</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>📖 Textbook (Knowledge Base)</h3>
+<p id="docs">
+1. Employees receive <b>20 paid vacation days per year</b>.<br><br>
+2. Sick leave is 10 days per year.<br><br>
+3. Parental leave is 12 weeks.
+</p>
+</div>
+
+<div class="card">
+<h3>❓ Student Question</h3>
+<p id="question">
+How many vacation days do employees get?
+</p>
+</div>
+
+</div>
+
+<div id="retrieval" class="step">
+<h3>Step 1 — Retrieval</h3>
+<p>
+The system searches the documents and finds the most relevant sentence:
+</p>
+<p class="highlight">
+Employees receive 20 paid vacation days per year.
+</p>
+</div>
+
+<div id="augmentation" class="step">
+<h3>Step 2 — Augmentation</h3>
+<p>
+The retrieved information is inserted into the prompt so the AI sees it together with the question.
+</p>
+
+<pre>
+Context:
+Employees receive 20 paid vacation days per year.
+
+Question:
+How many vacation days do employees get?
+</pre>
+
+<p>
+Now the AI doesn't guess from memory. It uses the retrieved context.
+</p>
+</div>
+
+<div id="generation" class="step">
+<h3>Step 3 — Generation</h3>
+<p>
+The AI reads the context and generates the final answer.
+</p>
+
+<div class="result" id="answer">
+<b>Answer:</b> Employees receive <b>20 paid vacation days per year</b> according to the employee handbook.
+</div>
+
+</div>
+
+<div class="buttons">
+
+<button onclick="showRetrieval()">1️⃣ Retrieval</button>
+<button onclick="showAugmentation()">2️⃣ Augmentation</button>
+<button onclick="showGeneration()">3️⃣ Generation</button>
+<button class="secondary" onclick="resetSim()">Reset</button>
+
+</div>
+
+</div>
+
+<script>
+
+function showRetrieval(){
+document.getElementById("retrieval").style.display="block";
+}
+
+function showAugmentation(){
+document.getElementById("retrieval").style.display="block";
+document.getElementById("augmentation").style.display="block";
+}
+
+function showGeneration(){
+document.getElementById("retrieval").style.display="block";
+document.getElementById("augmentation").style.display="block";
+document.getElementById("generation").style.display="block";
+document.getElementById("answer").style.display="block";
+}
+
+function resetSim(){
+document.getElementById("retrieval").style.display="none";
+document.getElementById("augmentation").style.display="none";
+document.getElementById("generation").style.display="none";
+document.getElementById("answer").style.display="none";
+}
+
+</script>
+
+</body>
+</html>
