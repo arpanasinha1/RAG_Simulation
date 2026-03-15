@@ -2,23 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RAG Simulator</title>
+<title>RAG System Simulator</title>
+
 <style>
+
 body{
-font-family: Arial, Helvetica, sans-serif;
-background: linear-gradient(135deg,#eef2ff,#f8fafc);
+font-family: system-ui, -apple-system, Segoe UI, Roboto;
+background:#0f172a;
+color:white;
 margin:0;
 padding:40px;
-color:#1e293b;
 }
 
 .container{
-max-width:1000px;
+max-width:1200px;
 margin:auto;
-background:white;
-border-radius:12px;
-padding:30px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
 h1{
@@ -28,76 +26,100 @@ margin-bottom:10px;
 
 .subtitle{
 text-align:center;
-color:#64748b;
+color:#94a3b8;
+margin-bottom:40px;
+}
+
+.pipeline{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
 margin-bottom:30px;
 }
 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
-}
-
 .card{
-border:1px solid #e2e8f0;
+background:#1e293b;
+padding:18px;
 border-radius:10px;
-padding:20px;
-background:#f8fafc;
-min-height:120px;
+border:1px solid #334155;
+min-height:130px;
 }
 
 .card h3{
 margin-top:0;
+font-size:15px;
+color:#38bdf8;
+}
+
+textarea,input{
+width:100%;
+background:#020617;
+border:1px solid #334155;
+color:white;
+padding:10px;
+border-radius:6px;
+}
+
+.docs{
+height:100px;
+overflow:auto;
+font-size:13px;
+line-height:1.4;
+}
+
+.highlight{
+background:#1d4ed8;
+padding:4px;
+border-radius:4px;
 }
 
 .buttons{
 text-align:center;
-margin-top:25px;
+margin-top:30px;
 }
 
 button{
-padding:12px 18px;
+padding:12px 20px;
 margin:8px;
 border:none;
 border-radius:8px;
-background:#4f46e5;
+background:#2563eb;
 color:white;
-font-size:14px;
 cursor:pointer;
-transition:0.2s;
+font-weight:600;
 }
 
 button:hover{
-background:#4338ca;
+background:#1d4ed8;
 }
 
-button.secondary{
-background:#64748b;
+button.reset{
+background:#475569;
 }
 
-.result{
-margin-top:20px;
-padding:20px;
-border-radius:10px;
-background:#ecfeff;
-border:1px solid #a5f3fc;
+.section{
+margin-top:25px;
 display:none;
 }
 
-.step{
-margin-top:15px;
+.promptbox{
+background:#020617;
 padding:15px;
 border-radius:8px;
-background:#f1f5f9;
-display:none;
+border:1px solid #334155;
+font-family:monospace;
+white-space:pre-wrap;
+font-size:13px;
 }
 
-.highlight{
-background:#dbeafe;
-padding:4px 6px;
-border-radius:4px;
+.answer{
+background:#064e3b;
+padding:15px;
+border-radius:8px;
+border:1px solid #10b981;
+margin-top:10px;
 }
+
 </style>
 </head>
 
@@ -105,76 +127,61 @@ border-radius:4px;
 
 <div class="container">
 
-<h1>RAG Simulator</h1>
-<div class="subtitle">Understand Retrieval → Augmentation → Generation</div>
+<h1>Retrieval Augmented Generation Simulator</h1>
+<div class="subtitle">Interactive visualization of a typical RAG pipeline</div>
 
-<div class="grid">
+<div class="pipeline">
 
 <div class="card">
-<h3>📖 Textbook (Knowledge Base)</h3>
-<p id="docs">
-1. Employees receive <b>20 paid vacation days per year</b>.<br><br>
-2. Sick leave is 10 days per year.<br><br>
-3. Parental leave is 12 weeks.
-</p>
+<h3>User Query</h3>
+<input id="query" value="What vacation policy do employees receive?">
 </div>
 
 <div class="card">
-<h3>❓ Student Question</h3>
-<p id="question">
-How many vacation days do employees get?
-</p>
+<h3>Embedding</h3>
+<div id="embedding">Vector representation will appear</div>
+</div>
+
+<div class="card">
+<h3>Vector Database</h3>
+<div class="docs" id="docs">
+1. Employees receive 20 paid vacation days per year.<br><br>
+2. Sick leave policy allows 10 days annually.<br><br>
+3. Remote work allowed up to 3 days per week.<br><br>
+4. Parental leave policy provides 12 weeks leave.<br><br>
+5. Health insurance includes dental coverage.
+</div>
+</div>
+
+<div class="card">
+<h3>Retrieved Documents</h3>
+<div id="retrieved">Waiting for retrieval...</div>
 </div>
 
 </div>
 
-<div id="retrieval" class="step">
-<h3>Step 1 — Retrieval</h3>
-<p>
-The system searches the documents and finds the most relevant sentence:
-</p>
-<p class="highlight">
-Employees receive 20 paid vacation days per year.
-</p>
+<div id="augmentationSection" class="section">
+
+<h3>Augmented Prompt Sent to the LLM</h3>
+
+<div id="prompt" class="promptbox"></div>
+
 </div>
 
-<div id="augmentation" class="step">
-<h3>Step 2 — Augmentation</h3>
-<p>
-The retrieved information is inserted into the prompt so the AI sees it together with the question.
-</p>
+<div id="generationSection" class="section">
 
-<pre>
-Context:
-Employees receive 20 paid vacation days per year.
+<h3>LLM Generated Answer</h3>
 
-Question:
-How many vacation days do employees get?
-</pre>
-
-<p>
-Now the AI doesn't guess from memory. It uses the retrieved context.
-</p>
-</div>
-
-<div id="generation" class="step">
-<h3>Step 3 — Generation</h3>
-<p>
-The AI reads the context and generates the final answer.
-</p>
-
-<div class="result" id="answer">
-<b>Answer:</b> Employees receive <b>20 paid vacation days per year</b> according to the employee handbook.
-</div>
+<div id="answer" class="answer"></div>
 
 </div>
 
 <div class="buttons">
 
-<button onclick="showRetrieval()">1️⃣ Retrieval</button>
-<button onclick="showAugmentation()">2️⃣ Augmentation</button>
-<button onclick="showGeneration()">3️⃣ Generation</button>
-<button class="secondary" onclick="resetSim()">Reset</button>
+<button onclick="runRetrieval()">1. Run Retrieval</button>
+<button onclick="augmentPrompt()">2. Augment Prompt</button>
+<button onclick="generate()">3. Generate Answer</button>
+<button class="reset" onclick="resetSim()">Reset</button>
 
 </div>
 
@@ -182,27 +189,59 @@ The AI reads the context and generates the final answer.
 
 <script>
 
-function showRetrieval(){
-document.getElementById("retrieval").style.display="block";
+let retrievedText="";
+
+function runRetrieval(){
+
+let query=document.getElementById("query").value;
+
+document.getElementById("embedding").innerHTML=
+"[0.23, -0.11, 0.67, 0.41, -0.52, 0.18 ...]";
+
+retrievedText="Employees receive 20 paid vacation days per year.";
+
+document.getElementById("retrieved").innerHTML=
+"<span class='highlight'>"+retrievedText+"</span>";
+
 }
 
-function showAugmentation(){
-document.getElementById("retrieval").style.display="block";
-document.getElementById("augmentation").style.display="block";
+function augmentPrompt(){
+
+document.getElementById("augmentationSection").style.display="block";
+
+let query=document.getElementById("query").value;
+
+let prompt=
+`Use the following context to answer the question.
+
+Context:
+${retrievedText}
+
+Question:
+${query}
+
+Answer:`;
+
+document.getElementById("prompt").textContent=prompt;
+
 }
 
-function showGeneration(){
-document.getElementById("retrieval").style.display="block";
-document.getElementById("augmentation").style.display="block";
-document.getElementById("generation").style.display="block";
-document.getElementById("answer").style.display="block";
+function generate(){
+
+document.getElementById("generationSection").style.display="block";
+
+document.getElementById("answer").textContent=
+"Employees receive 20 paid vacation days per year according to the company policy documents.";
+
 }
 
 function resetSim(){
-document.getElementById("retrieval").style.display="none";
-document.getElementById("augmentation").style.display="none";
-document.getElementById("generation").style.display="none";
-document.getElementById("answer").style.display="none";
+
+document.getElementById("embedding").innerHTML="Vector representation will appear";
+document.getElementById("retrieved").innerHTML="Waiting for retrieval...";
+document.getElementById("augmentationSection").style.display="none";
+document.getElementById("generationSection").style.display="none";
+document.getElementById("query").value="What vacation policy do employees receive?";
 }
 
 </script>
